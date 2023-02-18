@@ -3,3 +3,11 @@
 
 #include "STUGameModeBase.h"
 
+#include "Player/STUCharacter.h"
+#include "Player/STUPlayerController.h"
+
+ASTUGameModeBase::ASTUGameModeBase()
+{
+    DefaultPawnClass = ASTUCharacter::StaticClass();
+    PlayerControllerClass = ASTUPlayerController::StaticClass();
+}
