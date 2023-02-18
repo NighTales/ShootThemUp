@@ -51,8 +51,23 @@ void ASTUCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 bool ASTUCharacter::IsSprintAvailable() const
 {
-    const bool result = WantToSprint && IsMovingForward && !GetVelocity().IsZero();
-    return result;
+    const bool Result = WantToSprint && IsMovingForward && !GetVelocity().IsZero();
+    return Result;
+}
+
+float ASTUCharacter::GetMovementDirection() const
+{
+    if (GetVelocity().IsZero())
+    {
+        return 0;
+    }
+
+    const auto VelocityNormal = GetVelocity().GetSafeNormal();
+    const auto Angle = FMath::Acos(FVector::DotProduct(GetActorForwardVector(), VelocityNormal));
+    const auto CrossProduct = FVector::CrossProduct(VelocityNormal, GetActorForwardVector());
+    const auto Degrees = FMath::RadiansToDegrees(Angle);
+    const float Direction = CrossProduct.IsZero() ? Degrees : Degrees * FMath::Sign(CrossProduct.Z);
+    return Direction;
 }
 
 void ASTUCharacter::MoveForward(float Value)

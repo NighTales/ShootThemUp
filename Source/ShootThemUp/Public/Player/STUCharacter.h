@@ -30,9 +30,6 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Components")
     UCharacterMovementComponent* MovementComponent;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement")
-    float SprintSpeed = 1200;
-
 public:
     // Called every frame
     virtual void Tick(float DeltaTime) override;
@@ -42,6 +39,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category="Movement")
     bool IsSprintAvailable() const;
+
+    UFUNCTION(BlueprintCallable, Category="Movement")
+    float GetMovementDirection() const;
 
 private:
     bool WantToSprint;
