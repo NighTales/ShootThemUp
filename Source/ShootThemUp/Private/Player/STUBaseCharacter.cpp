@@ -7,7 +7,10 @@
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/TextRenderComponent.h"
+#include "Engine/DamageEvents.h"
 #include "GameFramework/SpringArmComponent.h"
+
+DEFINE_LOG_CATEGORY_STATIC(BaseCharacterLog, All, All);
 
 ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
     : Super(ObjInit.SetDefaultSubobjectClass<USTUCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
@@ -33,6 +36,8 @@ void ASTUBaseCharacter::BeginPlay()
 
     check(HealthComponent);
     check(HealthTextComponent);
+
+    OnTakeAnyDamage.AddDynamic(this, &ASTUBaseCharacter::OnTakeAnyDamageHandler);
 }
 
 void ASTUBaseCharacter::Tick(float DeltaTime)
@@ -41,6 +46,14 @@ void ASTUBaseCharacter::Tick(float DeltaTime)
 
     const auto Health = HealthComponent->GetHealth();
     HealthTextComponent->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), Health)));
+
+    TakeDamage(0.1f, FDamageEvent{}, Controller, this);
+}
+
+void ASTUBaseCharacter::OnTakeAnyDamageHandler(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy,
+    AActor* DamageCauser)
+{
+    UE_LOG(BaseCharacterLog, Display, TEXT("Damage: %f"), Damage);
 }
 
 void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
