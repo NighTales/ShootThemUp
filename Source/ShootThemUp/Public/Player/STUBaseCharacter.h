@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "STUBaseCharacter.generated.h"
 
+class UTextRenderComponent;
+class USTUHealthComponent;
 class USpringArmComponent;
 class UCameraComponent;
 UCLASS()
@@ -27,8 +29,15 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Components")
     UCameraComponent* CameraComponent;
 
+
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Components")
     UCharacterMovementComponent* MovementComponent;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Components")
+    USTUHealthComponent* HealthComponent;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Components")
+    UTextRenderComponent* HealthTextComponent;
 
 public:
     // Called every frame
