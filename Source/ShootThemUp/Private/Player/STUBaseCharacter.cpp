@@ -1,7 +1,7 @@
 // Shoot Them Up Game, All Rights Reserved.
 
 
-#include "Player/STUCharacter.h"
+#include "Player/STUBaseCharacter.h"
 
 #include "Components/STUCharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
@@ -9,7 +9,7 @@
 #include "GameFramework/SpringArmComponent.h"
 
 // Sets default values
-ASTUCharacter::ASTUCharacter(const FObjectInitializer& ObjInit)
+ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
     : Super(ObjInit.SetDefaultSubobjectClass<USTUCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
     // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -24,38 +24,38 @@ ASTUCharacter::ASTUCharacter(const FObjectInitializer& ObjInit)
 }
 
 // Called when the game starts or when spawned
-void ASTUCharacter::BeginPlay()
+void ASTUBaseCharacter::BeginPlay()
 {
     Super::BeginPlay();
 
 }
 
 // Called every frame
-void ASTUCharacter::Tick(float DeltaTime)
+void ASTUBaseCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 }
 
 // Called to bind functionality to input
-void ASTUCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
-    PlayerInputComponent->BindAxis("MoveForward", this, &ASTUCharacter::MoveForward);
-    PlayerInputComponent->BindAxis("MoveRight", this, &ASTUCharacter::MoveRight);
-    PlayerInputComponent->BindAxis("LookUp", this, &ASTUCharacter::AddControllerPitchInput);
-    PlayerInputComponent->BindAxis("TurnAround", this, &ASTUCharacter::AddControllerYawInput);
-    PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASTUCharacter::Jump);
-    PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ASTUCharacter::SprintStart);
-    PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ASTUCharacter::SprintEnd);
+    PlayerInputComponent->BindAxis("MoveForward", this, &ASTUBaseCharacter::MoveForward);
+    PlayerInputComponent->BindAxis("MoveRight", this, &ASTUBaseCharacter::MoveRight);
+    PlayerInputComponent->BindAxis("LookUp", this, &ASTUBaseCharacter::AddControllerPitchInput);
+    PlayerInputComponent->BindAxis("TurnAround", this, &ASTUBaseCharacter::AddControllerYawInput);
+    PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASTUBaseCharacter::Jump);
+    PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ASTUBaseCharacter::SprintStart);
+    PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ASTUBaseCharacter::SprintEnd);
 }
 
-bool ASTUCharacter::IsSprintAvailable() const
+bool ASTUBaseCharacter::IsSprintAvailable() const
 {
     const bool Result = WantToSprint && IsMovingForward && !GetVelocity().IsZero();
     return Result;
 }
 
-float ASTUCharacter::GetMovementDirection() const
+float ASTUBaseCharacter::GetMovementDirection() const
 {
     if (GetVelocity().IsZero())
     {
@@ -70,23 +70,23 @@ float ASTUCharacter::GetMovementDirection() const
     return Direction;
 }
 
-void ASTUCharacter::MoveForward(float Value)
+void ASTUBaseCharacter::MoveForward(float Value)
 {
     IsMovingForward = Value > 0;
     AddMovementInput(GetActorForwardVector(), Value);
 }
 
-void ASTUCharacter::MoveRight(float Value)
+void ASTUBaseCharacter::MoveRight(float Value)
 {
     AddMovementInput(GetActorRightVector(), Value);
 }
 
-void ASTUCharacter::SprintStart()
+void ASTUBaseCharacter::SprintStart()
 {
     WantToSprint = true;
 }
 
-void ASTUCharacter::SprintEnd()
+void ASTUBaseCharacter::SprintEnd()
 {
     WantToSprint = false;
 }

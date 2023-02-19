@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "STUCharacter.generated.h"
+#include "STUBaseCharacter.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
 UCLASS()
-class SHOOTTHEMUP_API ASTUCharacter : public ACharacter
+class SHOOTTHEMUP_API ASTUBaseCharacter : public ACharacter
 {
     GENERATED_BODY()
 
 public:
     // Sets default values for this character's properties
-    ASTUCharacter(const FObjectInitializer& ObjInit);
+    ASTUBaseCharacter(const FObjectInitializer& ObjInit);
 
 protected:
     // Called when the game starts or when spawned
