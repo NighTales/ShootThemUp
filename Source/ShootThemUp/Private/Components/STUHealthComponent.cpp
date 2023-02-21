@@ -16,4 +16,14 @@ float USTUHealthComponent::GetHealth() const
 void USTUHealthComponent::BeginPlay()
 {
     Super::BeginPlay();
+    if (const auto ComponentOwner = GetOwner())
+    {
+        ComponentOwner->OnTakeAnyDamage.AddDynamic(this, &USTUHealthComponent::OnTakeAnyDamage);
+    }
+}
+
+void USTUHealthComponent::OnTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy,
+    AActor* DamageCauser)
+{
+    Health -= Damage;
 }
