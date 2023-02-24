@@ -36,6 +36,9 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Components")
     UTextRenderComponent* HealthTextComponent;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Animation")
+    UAnimMontage* DeathAnimMontage;
+
 public:
     virtual void Tick(float DeltaTime) override;
 
@@ -54,4 +57,7 @@ private:
     void MoveRight(float Value);
     void SprintStart();
     void SprintEnd();
+
+    void OnDeath();
+    void OnHealthChanged(float Health);
 };
