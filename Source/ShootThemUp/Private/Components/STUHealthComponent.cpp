@@ -16,37 +16,63 @@ float USTUHealthComponent::GetHealth() const
 
 bool USTUHealthComponent::IsDead() const
 {
-    return Health <= 0;
+    return FMath::IsNearlyZero(Health) ;
 }
 
 void USTUHealthComponent::BeginPlay()
 {
     Super::BeginPlay();
 
-    Health = MaxHealth;
+    SetHealth(MaxHealth);
 
-    OnHealthChanged.Broadcast(Health);
-
-    if (const auto ComponentOwner = GetOwner())
+    if (auto const ComponentOwner = GetOwner())
     {
         ComponentOwner->OnTakeAnyDamage.AddDynamic(this, &USTUHealthComponent::OnTakeAnyDamage);
+
+        if (IsAutoHealEnabled)
+        {
+            GetWorld()->GetTimerManager().SetTimer(HealTimerHandle, this, &USTUHealthComponent::OnHealTimerUpdated, HealUpdateRate,
+                true, HealDelay);
+        }
     }
+}
+
+void USTUHealthComponent::SetHealth(const float NewHealth)
+{
+    Health = FMath::Clamp(NewHealth, 0, MaxHealth);
+    OnHealthChanged.Broadcast(Health);
 }
 
 void USTUHealthComponent::OnTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy,
     AActor* DamageCauser)
 {
-    if (Damage <= 0.0f || IsDead())
+    if (Damage <= 0.0f || IsDead() || !GetWorld())
     {
         return;
     }
 
-    Health = FMath::Clamp(Health - Damage, 0, MaxHealth);
+    SetHealth(Health - Damage);
 
-    OnHealthChanged.Broadcast(Health);
+    GetWorld()->GetTimerManager().PauseTimer(HealTimerHandle);
 
     if (IsDead())
     {
         OnDeath.Broadcast();
+        GetWorld()->GetTimerManager().ClearTimer(HealTimerHandle);
+    }
+    else if (IsAutoHealEnabled)
+    {
+        GetWorld()->GetTimerManager().SetTimer(HealTimerHandle, this, &USTUHealthComponent::OnHealTimerUpdated,
+            HealUpdateRate, true, HealDelay);
+    }
+}
+
+void USTUHealthComponent::OnHealTimerUpdated()
+{
+    SetHealth(Health + HealthPerTime);
+
+    if (FMath::IsNearlyEqual(Health, MaxHealth) && GetWorld())
+    {
+        GetWorld()->GetTimerManager().ClearTimer(HealTimerHandle);
     }
 }
