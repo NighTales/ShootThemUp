@@ -19,6 +19,9 @@ public:
     ASTUBaseCharacter(const FObjectInitializer& ObjInit);
 
 protected:
+    UFUNCTION()
+    void OnGroundLanded(const FHitResult& Hit);
+
     virtual void BeginPlay() override;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Components")
@@ -38,6 +41,15 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Animation")
     UAnimMontage* DeathAnimMontage;
+
+    UPROPERTY(EditDefaultsOnly, Category="Damage")
+    float LifeSpanOnDeath = 5.0f;
+
+    UPROPERTY(EditDefaultsOnly, Category="Damage")
+    FVector2D LandedDamageVelocity = FVector2D(900.f, 1200.f);
+
+    UPROPERTY(EditDefaultsOnly, Category="Damage")
+    FVector2D LandedDamage = FVector2D(10.f, 100.f);
 
 public:
     virtual void Tick(float DeltaTime) override;
