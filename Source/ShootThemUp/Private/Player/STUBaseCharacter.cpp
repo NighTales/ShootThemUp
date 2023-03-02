@@ -2,6 +2,8 @@
 
 
 #include "Player/STUBaseCharacter.h"
+
+#include "STUWeaponComponent.h"
 #include "Components/STUHealthComponent.h"
 #include "Components/STUCharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
@@ -23,6 +25,7 @@ ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
     SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
     SpringArmComponent->SetupAttachment(GetRootComponent());
     SpringArmComponent->bUsePawnControlRotation = true;
+    SpringArmComponent->SocketOffset = FVector(0, 100, 0);
 
     CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
     CameraComponent->SetupAttachment(SpringArmComponent);
@@ -30,6 +33,9 @@ ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
     HealthComponent = CreateDefaultSubobject<USTUHealthComponent>("HealthComponent");
     HealthTextComponent = CreateDefaultSubobject<UTextRenderComponent>("HealthTextComponent");
     HealthTextComponent->SetupAttachment(GetRootComponent());
+    HealthTextComponent->SetOwnerNoSee(true);
+
+    WeaponComponent = CreateDefaultSubobject<USTUWeaponComponent>("WeaponComponent");
 }
 
 void ASTUBaseCharacter::BeginPlay()
@@ -44,8 +50,6 @@ void ASTUBaseCharacter::BeginPlay()
     HealthComponent->OnDeath.AddUObject(this, &ASTUBaseCharacter::OnDeath);
     HealthComponent->OnHealthChanged.AddUObject(this, &ASTUBaseCharacter::OnHealthChanged);
     LandedDelegate.AddDynamic(this, &ASTUBaseCharacter::OnGroundLanded);
-
-    SpawnWeapon();
 }
 
 void ASTUBaseCharacter::Tick(float DeltaTime)
@@ -65,6 +69,9 @@ void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
     PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASTUBaseCharacter::Jump);
     PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ASTUBaseCharacter::SprintStart);
     PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ASTUBaseCharacter::SprintEnd);
+
+    check(WeaponComponent)
+    PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &USTUWeaponComponent::Fire);
 }
 
 bool ASTUBaseCharacter::IsSprintAvailable() const
@@ -142,20 +149,4 @@ void ASTUBaseCharacter::OnGroundLanded(const FHitResult& Hit)
 
     UE_LOG(BaseCharacterLog, Display, TEXT("FinalDamage %f"), FinalDamage);
     TakeDamage(FinalDamage, FDamageEvent{}, nullptr, nullptr);
-}
-
-void ASTUBaseCharacter::SpawnWeapon()
-{
-    if (!GetWorld())
-    {
-        return;
-    }
-
-    const auto Weapon = GetWorld()->SpawnActor<ASTUBaseWeapon>(WeaponClass);
-
-    if (Weapon)
-    {
-        FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
-        Weapon->AttachToComponent(GetMesh(), AttachmentRules, "WeaponSocket");
-    }
 }
