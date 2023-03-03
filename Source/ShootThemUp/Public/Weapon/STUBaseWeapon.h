@@ -19,9 +19,16 @@ public:
     virtual void Fire();
 
 protected:
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Components")
     USkeletalMeshComponent* WeaponMesh;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Weapon")
+    FName MuzzleSocketName = "MuzzleSocket";
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Weapon")
+    float TraceMaxDistance = 1500.0f;
 
     virtual void BeginPlay() override;
 
+    void MakeShot();
 };
