@@ -13,6 +13,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
 #include "Weapon/STUBaseWeapon.h"
+#include "Components/CapsuleComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(BaseCharacterLog, All, All);
 
@@ -127,9 +128,11 @@ void ASTUBaseCharacter::OnDeath()
     {
         Controller->ChangeState(EName::Spectating);
     }
+
+    GetCapsuleComponent()->SetCollisionResponseToChannels(ECR_Ignore);
 }
 
-void ASTUBaseCharacter::OnHealthChanged(float Health)
+void ASTUBaseCharacter::OnHealthChanged(float Health) const
 {
     HealthTextComponent->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), Health)));
 }

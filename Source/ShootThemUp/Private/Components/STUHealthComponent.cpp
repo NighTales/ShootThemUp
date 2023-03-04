@@ -16,7 +16,7 @@ float USTUHealthComponent::GetHealth() const
 
 bool USTUHealthComponent::IsDead() const
 {
-    return FMath::IsNearlyZero(Health) ;
+    return FMath::IsNearlyZero(Health);
 }
 
 void USTUHealthComponent::BeginPlay()

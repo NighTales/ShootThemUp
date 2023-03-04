@@ -3,6 +3,7 @@
 #include "Weapon/STUBaseWeapon.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "DrawDebugHelpers.h"
+#include "Engine/DamageEvents.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/Controller.h"
 
@@ -29,7 +30,7 @@ void ASTUBaseWeapon::Fire()
     MakeShot();
 }
 
-void ASTUBaseWeapon::MakeShot() const
+void ASTUBaseWeapon::MakeShot()
 {
     if (!GetWorld())
         return;
@@ -49,6 +50,7 @@ void ASTUBaseWeapon::MakeShot() const
 
     if (HitResult.bBlockingHit && Degrees < 90.0f)
     {
+        MakeDamage(HitResult);
         DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Red, false, 3.0f, 0, 3.0f);
         DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.0f, 24, FColor::Red, false, 5.0f);
     }
@@ -108,7 +110,7 @@ void ASTUBaseWeapon::MakeHit(FHitResult& HitResult, const FVector& TraceStart, c
     GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, CollisionParams);
 }
 
-float ASTUBaseWeapon::GetShootDegrees(const FHitResult HitResult) const
+float ASTUBaseWeapon::GetShootDegrees(const FHitResult& HitResult) const
 {
     const FTransform SocketTransform = WeaponMesh->GetSocketTransform(MuzzleSocketName);
 
@@ -119,4 +121,13 @@ float ASTUBaseWeapon::GetShootDegrees(const FHitResult HitResult) const
 
     const auto Degrees = FMath::RadiansToDegrees(Angle);
     return Degrees;
+}
+
+void ASTUBaseWeapon::MakeDamage(const FHitResult& HitResult)
+{
+    const auto DamagedActor = HitResult.GetActor();
+    if (!DamagedActor)
+        return;
+
+    DamagedActor->TakeDamage(DamageAmount, FDamageEvent(), GetPlayerController(), this);
 }
